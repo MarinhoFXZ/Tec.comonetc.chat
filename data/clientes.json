@@ -1,0 +1,18 @@
+[
+  {
+    "username": "Felipe Marcelo Marinho Da Silva",
+    "passwordHash": {
+      "salt": "459b2ad79d26cbedefc7de7982d14634",
+      "hash": "83c62d5fb985fcccae74e933577aaad9f8296612207f1d57378296a4c2e9e6062c72f4016c3144b76f4c99a8330c1659fd6b40a77c5ea2d8566fc70d2c9df912"
+    },
+    "createdAt": "2026-06-29T03:02:13.885Z"
+  },
+  {
+    "username": "Felipe Marcelo Marinho Da Silva",
+    "passwordHash": {
+      "salt": "2f6727ae69bbf2eaff214b2c52b7b4cd",
+      "hash": "165b7afd7a4b8c342120c87e550c08c2a85765c303ecf6d226fde4a3fea3665d22efa186eb3e817186804a8779398e5f6a13826362e7d54052d96737656f3425"
+    },
+    "createdAt": "2026-06-29T03:07:23.212Z"
+  }
+]

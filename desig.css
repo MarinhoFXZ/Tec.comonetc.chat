@@ -1,0 +1,234 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #f5f7ff;
+  background: radial-gradient(circle at top, #243b53 0%, #0b1022 55%, #050816 100%);
+  padding: 24px 16px;
+}
+
+.site-brand {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.site-brand .brand-name {
+  display: inline-block;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #8dfdff, #6c7cff 45%, #00e5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
+.site-brand .brand-subtitle {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: #9cb8ff;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Fixed centered brand that appears in the vacant top-center space */
+.site-brand-fixed {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(0);
+  z-index: 1400;
+  padding: 6px 12px;
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+/* Floating neon brand text with depth layers */
+.site-brand-fixed .brand-name {
+  display: inline-block;
+  font-size: clamp(2rem, 6.5vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #66f7ff 0%, #7b61ff 45%, #00e5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  transform: translateZ(0) translateY(-2px);
+}
+
+.site-brand-fixed .brand-subtitle {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: rgba(180,205,255,0.9);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Soft depth layer under the brand to simulate a 3D plate */
+/* Removed depth pseudo-elements to keep brand flat and clear */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.16), transparent 35%);
+  pointer-events: none;
+}
+
+.login-container, .chat-shell {
+  width: min(92vw, 980px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  background: rgba(7, 11, 24, 0.82);
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.18), inset 0 0 20px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin: 0;
+  color: #c9d3ff;
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 0.95rem;
+  color: #c9d3ff;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #00e5ff;
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.2);
+}
+
+.login-btn, .send-btn {
+  padding: 12px 14px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #00e5ff, #7b61ff);
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-btn:hover, .send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.35);
+}
+
+.chat-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 2fr 1fr;
+}
+
+.chat-panel, .users-panel {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.messages {
+  min-height: 320px;
+  max-height: 420px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 6px;
+}
+
+.message {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.message strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.message .meta {
+  font-size: 0.8rem;
+  color: #8fd8ff;
+  margin-bottom: 4px;
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.user-pill {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(0, 229, 255, 0.14);
+  color: #f2fbff;
+}
+
+@media (max-width: 760px) {
+  .chat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="desig.css">
+  <title>Conversa</title>
+</head>
+<body>
+  <div class="site-brand site-brand-fixed">
+    <div class="brand-name">TEC COMONETC</div>
+  </div>
+
+  <div class="chat-shell">
+    <h1>Conversa online</h1>
+    <p class="subtitle">Versão estática para GitHub Pages.</p>
+
+    <div class="chat-grid">
+      <div class="chat-panel">
+        <div id="messages" class="messages"></div>
+        <form id="chatForm" style="margin-top: 12px; display: flex; gap: 8px;">
+          <input type="text" id="messageText" placeholder="Escreva uma mensagem" required>
+          <button class="send-btn" type="submit">Enviar</button>
+        </form>
+      </div>
+
+      <div class="users-panel">
+        <strong>Você está online</strong>
+        <div id="usersList" class="users-list"></div>
+        <button id="logoutBtn" class="login-btn" type="button" style="margin-top: 12px;">Sair</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const name = localStorage.getItem('chatUserName');
+    const role = localStorage.getItem('chatUserRole');
+
+    if (!localStorage.getItem('chatUserLoggedIn') || !name) {
+      window.location.href = 'login.html';
+    }
+
+    const messagesEl = document.getElementById('messages');
+    const usersEl = document.getElementById('usersList');
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('messageText');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function loadMessages() {
+      const messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+      messagesEl.innerHTML = '';
+
+      if (!messages.length) {
+        messagesEl.innerHTML = '<div class="message"><strong>Nenhuma mensagem ainda.</strong></div>';
+        return;
+      }
+
+      messages.forEach((message) => {
+        const div = document.createElement('div');
+        div.className = 'message';
+        div.innerHTML = `<div class="meta">${message.from} • ${message.role}</div><strong>${message.text}</strong><div class="meta">${new Date(message.createdAt).toLocaleTimeString('pt-BR')}</div>`;
+        messagesEl.appendChild(div);
+      });
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function renderUser() {
+      usersEl.innerHTML = '';
+      const pill = document.createElement('div');
+      pill.className = 'user-pill';
+      pill.textContent = `${name} (${role || 'cliente'})`;
+      usersEl.appendChild(pill);
+    }
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      const messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+      messages.push({
+        from: name,
+        role: role || 'cliente',
+        text,
+        createdAt: new Date().toISOString()
+      });
+
+      localStorage.setItem('chatMessages', JSON.stringify(messages));
+      input.value = '';
+      loadMessages();
+    });
+
+    logoutBtn.addEventListener('click', function () {
+      localStorage.removeItem('chatUserLoggedIn');
+      localStorage.removeItem('chatUserName');
+      localStorage.removeItem('chatUserRole');
+      window.location.href = 'login.html';
+    });
+
+    renderUser();
+    loadMessages();
+  </script>
+</body>
+</html>

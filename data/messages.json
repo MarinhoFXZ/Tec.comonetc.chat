@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1782702940183,
+    "from": "felipe marcelo",
+    "role": "cliente",
+    "text": "oi",
+    "createdAt": "2026-06-29T03:15:40.183Z"
+  },
+  {
+    "id": 1782703028206,
+    "from": "Marcel",
+    "role": "cliente",
+    "text": "Oi sou marcel",
+    "createdAt": "2026-06-29T03:17:08.206Z"
+  },
+  {
+    "id": 1782703087112,
+    "from": "felipe",
+    "role": "admin",
+    "text": "oi gostarom do site",
+    "createdAt": "2026-06-29T03:18:07.112Z"
+  },
+  {
+    "id": 1782703095991,
+    "from": "Marcel",
+    "role": "cliente",
+    "text": "Ss dms",
+    "createdAt": "2026-06-29T03:18:15.991Z"
+  },
+  {
+    "id": 1782703110662,
+    "from": "felipe",
+    "role": "admin",
+    "text": "bom ne",
+    "createdAt": "2026-06-29T03:18:30.662Z"
+  }
+]

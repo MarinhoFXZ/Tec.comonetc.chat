@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="desig.css">
+  <title>Entrar na conversa</title>
+  <style>
+    .hidden { display: none !important; }
+    .helper { color: #c9d3ff; font-size: 0.9rem; margin-top: 8px; }
+    .link-btn {
+      background: transparent;
+      border: none;
+      color: #8fd8ff;
+      cursor: pointer;
+      padding: 0;
+      font-size: 0.92rem;
+      text-decoration: underline;
+    }
+    .actions-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .card {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(255,255,255,0.05);
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="site-brand site-brand-fixed">
+    <div class="brand-name">TEC COMONETC</div>
+  </div>
+
+  <div class="login-container">
+    <h1>Entrar na conversa</h1>
+    <p class="subtitle">Faça login, cadastre-se ou recupere a senha.</p>
+
+    <div class="actions-row" id="authActions">
+      <button class="login-btn" type="button" id="showLoginBtn">Entrar</button>
+      <button class="login-btn" type="button" id="showRegisterBtn">Cadastrar</button>
+    </div>
+
+    <div id="recoveryPanel" class="card hidden">
+      <h3>Recuperar senha</h3>
+      <div class="input-group" id="recoveryEmailStep">
+        <label for="recoveryEmail">E-mail</label>
+        <input type="email" id="recoveryEmail" name="recoveryEmail" required>
+      </div>
+
+      <div class="input-group hidden" id="recoveryCodeStep">
+        <label for="recoveryCode">Código recebido</label>
+        <input type="text" id="recoveryCode" name="recoveryCode" required>
+      </div>
+
+      <div class="input-group hidden" id="newPasswordStep">
+        <label for="newPassword">Nova senha</label>
+        <input type="password" id="newPassword" name="newPassword" required>
+      </div>
+
+      <button class="login-btn" type="button" id="recoveryActionBtn">Enviar código</button>
+    </div>
+
+    <div id="loginPanel" class="card">
+      <form id="loginForm">
+        <div class="input-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Senha</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <button class="login-btn" type="submit">Entrar</button>
+        <button class="link-btn" type="button" id="forgotBtn">Esqueci a senha</button>
+      </form>
+    </div>
+
+    <div id="registerPanel" class="card hidden">
+      <form id="registerForm">
+        <div class="input-group">
+          <label for="registerName">Nome</label>
+          <input type="text" id="registerName" name="registerName" required>
+        </div>
+
+        <div class="input-group">
+          <label for="registerEmail">E-mail</label>
+          <input type="email" id="registerEmail" name="registerEmail" required>
+        </div>
+
+        <div class="input-group">
+          <label for="registerBirth">Data de nascimento</label>
+          <input type="date" id="registerBirth" name="registerBirth" required>
+        </div>
+
+        <div class="input-group">
+          <label for="registerPassword">Senha</label>
+          <input type="password" id="registerPassword" name="registerPassword" required>
+        </div>
+
+        <div class="input-group">
+          <label for="confirmPassword">Confirmar senha</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+
+        <button class="login-btn" type="submit">Cadastrar</button>
+      </form>
+    </div>
+
+    <div id="profileStep" class="card hidden">
+      <div class="input-group">
+        <label for="name">Seu nome</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+
+      <div class="input-group">
+        <label for="role">Você é</label>
+        <select id="role" name="role">
+          <option value="cliente">Cliente</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+
+      <div class="input-group hidden" id="adminPasswordGroup">
+        <label for="adminPassword">Senha do administrador</label>
+        <input type="password" id="adminPassword" name="adminPassword">
+      </div>
+
+      <button class="login-btn" type="button" id="enterChatBtn">Entrar no chat</button>
+    </div>
+
+    <p id="statusText" class="helper"></p>
+  </div>
+
+  <script>
+    const loginPanel = document.getElementById('loginPanel');
+    const registerPanel = document.getElementById('registerPanel');
+    const profileStep = document.getElementById('profileStep');
+    const recoveryPanel = document.getElementById('recoveryPanel');
+    const recoveryEmailStep = document.getElementById('recoveryEmailStep');
+    const recoveryCodeStep = document.getElementById('recoveryCodeStep');
+    const newPasswordStep = document.getElementById('newPasswordStep');
+    const statusText = document.getElementById('statusText');
+    const authActions = document.getElementById('authActions');
+    const forgotBtn = document.getElementById('forgotBtn');
+    const recoveryActionBtn = document.getElementById('recoveryActionBtn');
+    const roleSelect = document.getElementById('role');
+    const passwordGroup = document.getElementById('adminPasswordGroup');
+    const showLoginBtn = document.getElementById('showLoginBtn');
+    const showRegisterBtn = document.getElementById('showRegisterBtn');
+    const ADMIN_PASSWORD = '9895';
+    const CREDENTIALS_KEY = 'siteCredentials';
+    let recoveryStep = 'email';
+
+    function getCredentials() {
+      try {
+        return JSON.parse(localStorage.getItem(CREDENTIALS_KEY) || '{}');
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveCredentials(data) {
+      localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(data));
+    }
+
+    function getPassword(email) {
+      const credentials = getCredentials();
+      if (credentials[email]) return credentials[email];
+      const defaults = {
+        'cliente@site.com': '123456',
+        'admin@site.com': '9895'
+      };
+      return defaults[email] || null;
+    }
+
+    function showPanel(panel) {
+      const showAuthActions = panel === 'login' || panel === 'register';
+      if (showAuthActions) {
+        authActions.classList.remove('hidden');
+      } else {
+        authActions.classList.add('hidden');
+      }
+      loginPanel.classList.toggle('hidden', panel !== 'login');
+      registerPanel.classList.toggle('hidden', panel !== 'register');
+      profileStep.classList.toggle('hidden', panel !== 'profile');
+      recoveryPanel.classList.toggle('hidden', panel !== 'recovery');
+    }
+
+    function showProfileStep() {
+      showPanel('profile');
+      statusText.textContent = 'Login concluído. Agora escolha seu nome e perfil.';
+    }
+
+    roleSelect.addEventListener('change', function () {
+      passwordGroup.classList.toggle('hidden', this.value !== 'admin');
+    });
+
+    showLoginBtn.addEventListener('click', function () {
+      showPanel('login');
+      statusText.textContent = '';
+    });
+
+    showRegisterBtn.addEventListener('click', function () {
+      showPanel('register');
+      statusText.textContent = 'Cadastre-se com e-mail, nome, data de nascimento e senha.';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        alert('Digite e-mail e senha.');
+        return;
+      }
+
+      const storedPassword = getPassword(email);
+      if (storedPassword && storedPassword === password) {
+        localStorage.setItem('chatUserEmail', email);
+        localStorage.setItem('chatUserLoggedIn', 'true');
+        showProfileStep();
+      } else {
+        alert('E-mail ou senha incorretos.');
+      }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+      const birth = document.getElementById('registerBirth').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (!name || !email || !birth || !password || !confirmPassword) {
+        alert('Preencha todos os campos.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('As senhas não conferem.');
+        return;
+      }
+
+      const credentials = getCredentials();
+      credentials[email] = password;
+      saveCredentials(credentials);
+      localStorage.setItem('chatUserEmail', email);
+      localStorage.setItem('chatUserName', name);
+      localStorage.setItem('chatUserLoggedIn', 'true');
+      alert('Cadastro feito com sucesso.');
+      showProfileStep();
+    });
+
+    forgotBtn.addEventListener('click', function () {
+      recoveryStep = 'email';
+      showPanel('recovery');
+      recoveryEmailStep.classList.remove('hidden');
+      recoveryCodeStep.classList.add('hidden');
+      newPasswordStep.classList.add('hidden');
+      recoveryActionBtn.textContent = 'Enviar código';
+      statusText.textContent = 'Informe o e-mail para receber o código.';
+    });
+
+    recoveryActionBtn.addEventListener('click', async function () {
+      if (recoveryStep === 'email') {
+        const email = document.getElementById('recoveryEmail').value.trim().toLowerCase();
+        if (!email) {
+          alert('Informe o e-mail.');
+          return;
+        }
+
+        recoveryActionBtn.disabled = true;
+        recoveryActionBtn.textContent = 'Enviando...';
+        statusText.textContent = 'Enviando o código para o e-mail informado...';
+
+        try {
+          const response = await fetch('/recover-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const result = await response.json();
+
+          if (!response.ok || !result.ok) {
+            throw new Error(result.message || 'Não foi possível enviar o código.');
+          }
+
+          localStorage.setItem('recoveryCode', result.code);
+          localStorage.setItem('recoveryEmail', email);
+
+          statusText.textContent = 'Código enviado para o e-mail informado.';
+          alert('Código enviado para o e-mail informado.');
+          recoveryStep = 'code';
+          recoveryEmailStep.classList.add('hidden');
+          recoveryCodeStep.classList.remove('hidden');
+          recoveryActionBtn.textContent = 'Validar código';
+        } catch (error) {
+          statusText.textContent = error.message;
+          alert(error.message);
+        } finally {
+          recoveryActionBtn.disabled = false;
+        }
+
+        return;
+      }
+
+      if (recoveryStep === 'code') {
+        const code = document.getElementById('recoveryCode').value.trim();
+        const storedCode = localStorage.getItem('recoveryCode');
+
+        if (code !== storedCode) {
+          alert('Código incorreto.');
+          return;
+        }
+
+        recoveryStep = 'password';
+        recoveryCodeStep.classList.add('hidden');
+        newPasswordStep.classList.remove('hidden');
+        recoveryActionBtn.textContent = 'Salvar nova senha';
+        statusText.textContent = 'Digite a nova senha.';
+        return;
+      }
+
+      const newPassword = document.getElementById('newPassword').value;
+      const email = localStorage.getItem('recoveryEmail');
+
+      if (!newPassword) {
+        alert('Digite a nova senha.');
+        return;
+      }
+
+      const credentials = getCredentials();
+      credentials[email] = newPassword;
+      saveCredentials(credentials);
+      alert('Senha alterada com sucesso.');
+      showPanel('login');
+      statusText.textContent = 'Senha alterada. Faça login com a nova senha.';
+    });
+
+    document.getElementById('enterChatBtn').addEventListener('click', function () {
+      const name = document.getElementById('name').value.trim();
+      const role = document.getElementById('role').value;
+      const adminPassword = document.getElementById('adminPassword').value;
+
+      if (!name) {
+        alert('Digite seu nome para entrar.');
+        return;
+      }
+
+      if (role === 'admin' && adminPassword !== ADMIN_PASSWORD) {
+        alert('Senha de administrador incorreta.');
+        return;
+      }
+
+      localStorage.setItem('chatUserName', name);
+      localStorage.setItem('chatUserRole', role === 'admin' ? 'admin' : 'cliente');
+      localStorage.setItem('chatUserLoggedIn', 'true');
+      window.location.href = 'chat.html';
+    });
+  </script>
+</body>
+</html>
